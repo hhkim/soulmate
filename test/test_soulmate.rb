@@ -1,6 +1,27 @@
+#coding: utf-8
+
 require 'helper'
 
 class TestSoulmate < Test::Unit::TestCase
+  def test_for_korean
+    items = []
+    venues = File.open(File.expand_path(File.dirname(__FILE__)) + '/samples/kor.json', "r")
+    venues.each_line do |venue|
+      items << MultiJson.decode(venue)
+    end
+    
+    items_loaded = Soulmate::Loader.new('kor').load(items)
+    
+    assert_equal 3, items_loaded.size
+    
+    matcher = Soulmate::Matcher.new('kor')
+    results = matcher.matches_for_term('흐르는', :limit => 5)
+    
+    # puts "result size #{results.size}"
+    assert_equal 2, results.size
+    assert_equal '흐르는 강물처럼', results[0]['term']
+  end
+  
   def test_integration_can_load_values_and_query
     items = []
     venues = File.open(File.expand_path(File.dirname(__FILE__)) + '/samples/venues.json', "r")
