@@ -7,10 +7,19 @@ module Soulmate
         Soulmate.stop_words.include?(w)
       end
       
-      words_for_kor = normalize_for_kor(normalized_phrase).split(' ').reject do |w|
-        Soulmate.stop_words.include?(w)
-      end
-      
+			words_for_kor = []
+			suffix_word = normalized_phrase
+			while true
+      	words_for_kor += normalize_for_kor(suffix_word).split(' ').reject do |w|
+       	 Soulmate.stop_words.include?(w)
+				end
+
+				suffix_words = suffix_word.split(' ', 2)
+				break if suffix_words.length != 2
+
+				suffix_word = suffix_words[1]
+			end
+		
       (words_for_kor + words).map do |w|
         (MIN_COMPLETE-1..(w.length-1)).map{ |l| w[0..l] }
       end.flatten.uniq
